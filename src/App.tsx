@@ -11,6 +11,8 @@ import CategoryPage from "./pages/CategoryPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNewsManagement from "./pages/AdminNewsManagement";
+import AdminReporterManagement from "./pages/AdminReporterManagement";
+import AdminAdvertisementManagement from "./pages/AdminAdvertisementManagement";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/news" element={<AdminNewsManagement />} />
+          <Route path="/admin/reporters" element={<AdminReporterManagement />} />
+          <Route path="/admin/advertisements" element={<AdminAdvertisementManagement />} />
           
           {/* Not Found */}
           <Route path="*" element={<NotFound />} />
