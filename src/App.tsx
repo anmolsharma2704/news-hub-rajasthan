@@ -10,6 +10,7 @@ import NewsDetail from "./pages/NewsDetail";
 import CategoryPage from "./pages/CategoryPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminNewsManagement from "./pages/AdminNewsManagement";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/news" element={<AdminNewsManagement />} />
           
           {/* Not Found */}
           <Route path="*" element={<NotFound />} />
