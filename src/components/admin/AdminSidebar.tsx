@@ -8,7 +8,8 @@ import {
   LogOut, 
   Settings,
   ImageIcon,
-  Bell
+  Bell,
+  Globe
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -18,6 +19,7 @@ const sidebarItems = [
   { path: '/admin/reporters', label: 'रिपोर्टर्स', icon: Users },
   { path: '/admin/advertisements', label: 'विज्ञापन', icon: ImageIcon },
   { path: '/admin/notifications', label: 'नोटिफिकेशन', icon: Bell },
+  { path: '/admin/websettings', label: 'वेब सेटिंग्स', icon: Globe },
   { path: '/admin/settings', label: 'सेटिंग्स', icon: Settings },
 ];
 

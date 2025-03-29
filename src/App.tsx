@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminNewsManagement from "./pages/AdminNewsManagement";
 import AdminReporterManagement from "./pages/AdminReporterManagement";
 import AdminAdvertisementManagement from "./pages/AdminAdvertisementManagement";
+import AdminWebSettings from "./pages/AdminWebSettings";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/admin/news" element={<AdminNewsManagement />} />
           <Route path="/admin/reporters" element={<AdminReporterManagement />} />
           <Route path="/admin/advertisements" element={<AdminAdvertisementManagement />} />
+          <Route path="/admin/websettings" element={<AdminWebSettings />} />
           
           {/* Not Found */}
           <Route path="*" element={<NotFound />} />
