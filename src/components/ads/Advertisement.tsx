@@ -12,7 +12,7 @@ const Advertisement = ({ position, imageUrl, link, altText }: AdvertisementProps
   const getAdClasses = () => {
     switch (position) {
       case 'banner':
-        return 'w-full h-20 md:h-24';
+        return 'w-full h-20 md:h-72';
       case 'sidebar':
         return 'w-full h-80';
       case 'inline':
@@ -35,7 +35,7 @@ const Advertisement = ({ position, imageUrl, link, altText }: AdvertisementProps
         <img 
           src={imageUrl} 
           alt={altText} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
         <span className="absolute top-0 right-0 bg-gray-800 text-white text-xs px-1 opacity-70">
           विज्ञापन

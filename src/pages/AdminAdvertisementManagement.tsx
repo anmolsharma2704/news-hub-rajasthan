@@ -1,7 +1,5 @@
-
-import React, { useState } from 'react';
-import AdminSidebar from '@/components/admin/AdminSidebar';
-import AdminTopbar from '@/components/admin/AdminTopbar';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '@/utils/apiService';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter, ChevronDown } from 'lucide-react';
 import AdvertisementTable from '@/components/admin/AdvertisementTable';
@@ -9,97 +7,120 @@ import AdvertisementForm from '@/components/admin/AdvertisementForm';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminAdvertisementManagement = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddingAd, setIsAddingAd] = useState(false);
   const [isEditingAd, setIsEditingAd] = useState(false);
   const [selectedAd, setSelectedAd] = useState(null);
+  const [ads, setAds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-  
+
+  useEffect(() => {
+    fetchAds();
+  }, []);
+
+ const fetchAds = async () => {
+  try {
+    const res = await apiService.getAllAds();
+    // if backend sends { ads: [...] }
+    if (Array.isArray(res.ads)) {
+      setAds(res.ads);
+    } 
+    // if backend sends just an array
+    else if (Array.isArray(res)) {
+      setAds(res);
+    } 
+    else {
+      setAds([]); // fallback
+    }
+  } catch (error) {
+    console.error("Error fetching ads:", error);
+    toast({ title: "Error", description: "Failed to load ads", variant: "destructive" });
+    setAds([]); // ensure ads is always an array
+  }
+};
+
+
+
   const handleAddAdClick = () => {
     setIsAddingAd(true);
     setIsEditingAd(false);
     setSelectedAd(null);
   };
-  
-  const handleEditAd = (ad) => {
-    setSelectedAd(ad);
-    setIsEditingAd(true);
-    setIsAddingAd(false);
+
+const handleEditAd = (adId: string) => {
+  setSelectedAd(adId); // store only ID
+  setIsEditingAd(true);
+  setIsAddingAd(false);
+};
+
+  const handleActiveToggle = async (adId, isActive) => {
+    try {
+      await apiService.updateAd(adId, { status: isActive ? "active" : "paused" });
+      toast({
+        title: isActive ? "विज्ञापन सक्रिय किया गया" : "विज्ञापन निष्क्रिय किया गया",
+        description: isActive 
+          ? "विज्ञापन सफलतापूर्वक सक्रिय किया गया है" 
+          : "विज्ञापन सफलतापूर्वक निष्क्रिय किया गया है",
+      });
+      fetchAds();
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
   };
-  
-  const handleActiveToggle = (adId, isActive) => {
-    // In a real app, this would call an API to update the ad status
-    toast({
-      title: isActive ? "विज्ञापन सक्रिय किया गया" : "विज्ञापन निष्क्रिय किया गया",
-      description: isActive 
-        ? "विज्ञापन सफलतापूर्वक सक्रिय किया गया है" 
-        : "विज्ञापन सफलतापूर्वक निष्क्रिय किया गया है",
-      variant: "default",
-    });
+
+  const handleDeleteAd = async (adId) => {
+    try {
+      await apiService.deleteAd(adId);
+      toast({
+        title: "विज्ञापन हटा दिया गया",
+        description: "विज्ञापन सफलतापूर्वक हटा दिया गया है",
+      });
+      fetchAds();
+    } catch (error) {
+      console.error("Error deleting ad:", error);
+    }
   };
-  
-  const handleDeleteAd = (adId) => {
-    // In a real app, this would call an API to delete the ad
-    toast({
-      title: "विज्ञापन हटा दिया गया",
-      description: "विज्ञापन सफलतापूर्वक हटा दिया गया है",
-      variant: "default",
-    });
-  };
-  
+
   const handleFormClose = () => {
     setIsAddingAd(false);
     setIsEditingAd(false);
     setSelectedAd(null);
   };
-  
-  const handleFormSubmit = (adData) => {
-    // In a real app, this would call an API to save the ad
-    toast({
-      title: isEditingAd ? "विज्ञापन अपडेट किया गया" : "नया विज्ञापन जोड़ा गया",
-      description: isEditingAd 
-        ? "विज्ञापन सफलतापूर्वक अपडेट किया गया है" 
-        : "नया विज्ञापन सफलतापूर्वक जोड़ा गया है",
-      variant: "default",
-    });
-    
-    handleFormClose();
+
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (isEditingAd) {
+        await apiService.updateAd(selectedAd._id, formData);
+        toast({ title: "विज्ञापन अपडेट किया गया", description: "विज्ञापन सफलतापूर्वक अपडेट किया गया है" });
+      } else {
+        await apiService.createAd(formData);
+        toast({ title: "नया विज्ञापन जोड़ा गया", description: "नया विज्ञापन सफलतापूर्वक जोड़ा गया है" });
+      }
+      handleFormClose();
+      fetchAds();
+    } catch (error) {
+      console.error("Error saving ad:", error);
+    }
   };
-  
-  return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Mobile sidebar overlay */}
-      <div 
-        className={`fixed inset-0 bg-gray-800 bg-opacity-50 z-40 md:hidden transition-opacity duration-300 ease-in-out ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
-        onClick={toggleSidebar}
-      ></div>
-      
-      {/* Sidebar */}
-      <div 
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-news-blue-dark transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <AdminSidebar />
-      </div>
-      
-      <div className="flex-1 flex flex-col md:ml-64">
-        <AdminTopbar toggleSidebar={toggleSidebar} />
+
+  const filteredAds = ads.filter(ad =>
+    ad.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return ( 
         
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">
           {(isAddingAd || isEditingAd) ? (
-            <AdvertisementForm 
-              onClose={handleFormClose} 
-              onSubmit={handleFormSubmit} 
-              isEditing={isEditingAd}
-              adData={selectedAd}
-            />
+           <AdvertisementForm 
+  onClose={handleFormClose} 
+  onSubmit={handleFormSubmit} 
+  isEditing={isEditingAd}
+  adId={selectedAd} // now sending ID only
+/>
+
           ) : (
             <>
+              {/* Page Header */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
                 <div>
                   <h1 className="text-xl md:text-2xl font-bold text-news-blue-dark font-hindi">विज्ञापन प्रबंधन</h1>
@@ -114,6 +135,7 @@ const AdminAdvertisementManagement = () => {
                 </Button>
               </div>
               
+              {/* Search & Filter */}
               <div className="bg-white p-3 md:p-4 rounded-lg shadow-sm mb-6">
                 <div className="flex flex-col md:flex-row gap-3">
                   <div className="relative flex-grow">
@@ -121,6 +143,8 @@ const AdminAdvertisementManagement = () => {
                     <input 
                       type="text" 
                       placeholder="विज्ञापन खोजें..." 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-news-blue"
                     />
                   </div>
@@ -135,7 +159,9 @@ const AdminAdvertisementManagement = () => {
                 </div>
               </div>
               
+              {/* Advertisement Table */}
               <AdvertisementTable 
+                ads={filteredAds}
                 onEdit={handleEditAd} 
                 onDelete={handleDeleteAd}
                 onActiveToggle={handleActiveToggle}
@@ -143,8 +169,6 @@ const AdminAdvertisementManagement = () => {
             </>
           )}
         </main>
-      </div>
-    </div>
   );
 };
 

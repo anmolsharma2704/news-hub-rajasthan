@@ -1,69 +1,94 @@
-# Welcome to your Lovable project
+# News Hub Rajasthan - Frontend
 
-## Project info
+A modern React-based news website for Rajasthan with admin management capabilities.
 
-**URL**: https://lovable.dev/projects/41f5f15d-e09d-49c9-bbf4-175a40fc055f
+## Features
 
-## How can I edit this code?
+- **Public News Viewing**: Browse news by categories
+- **Admin Dashboard**: Complete news management system
+- **Real-time Data**: Connected to your existing backend API
+- **Modern UI**: Built with shadcn/ui components
+- **Responsive Design**: Works on all devices
 
-There are several ways of editing your application.
+## Setup Instructions
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/41f5f15d-e09d-49c9-bbf4-175a40fc055f) and start prompting.
+- Node.js (v16 or higher)
+- Your backend server running on `http://localhost:5000`
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. Install dependencies:
+```bash
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+2. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+3. Open your browser and navigate to `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## API Configuration
 
-**Use GitHub Codespaces**
+The frontend is configured to connect to your backend API at `http://localhost:5000/api`. 
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+If your backend is running on a different URL, update the `API_BASE_URL` in `src/lib/api.ts`.
 
-## What technologies are used for this project?
+## Available Scripts
 
-This project is built with .
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
 
-## How can I deploy this project?
+```
+src/
+├── components/          # Reusable UI components
+│   ├── admin/          # Admin-specific components
+│   ├── auth/           # Authentication components
+│   ├── layout/         # Layout components (Navbar, Footer)
+│   ├── news/           # News-related components
+│   └── ui/             # Base UI components (shadcn/ui)
+├── hooks/              # Custom React hooks
+│   └── useApi.ts       # API integration hooks
+├── lib/                # Utility libraries
+│   └── api.ts          # API service functions
+├── pages/              # Page components
+└── App.tsx             # Main app component
+```
 
-Simply open [Lovable](https://lovable.dev/projects/41f5f15d-e09d-49c9-bbf4-175a40fc055f) and click on Share -> Publish.
+## Backend Integration
 
-## I want to use a custom domain - is that possible?
+The frontend is now fully integrated with your existing backend API:
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- **News Management**: Create, edit, delete, and approve news articles
+- **User Authentication**: Login/logout functionality
+- **Advertisement Management**: Display and manage ads
+- **User Management**: Admin user management features
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+## Getting Started
+
+1. Make sure your backend server is running
+2. Start the frontend development server
+3. Navigate to the admin login page at `/admin/login`
+4. Use your existing admin credentials to log in
+5. Start managing your news content!
+
+## Troubleshooting
+
+- **API Connection Issues**: Check that your backend is running on the correct port
+- **CORS Errors**: Ensure your backend has CORS configured for `http://localhost:5173`
+- **Authentication Issues**: Verify your admin credentials in the backend database

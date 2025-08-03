@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, Image, X, UploadCloud, Save } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useCreateNews, useUpdateNews } from '@/hooks/useApi';
+import { NewsItem } from '@/lib/api';
 
 // Form validation schema
 const newsFormSchema = z.object({
@@ -49,11 +51,15 @@ interface NewsFormProps {
   onClose: () => void;
   onSubmit: (data: NewsFormValues) => void;
   isEditing: boolean;
-  newsData?: any;
+  newsData?: NewsItem;
 }
 
 const NewsForm = ({ onClose, onSubmit, isEditing, newsData }: NewsFormProps) => {
   const isMobile = useIsMobile();
+  
+  // API hooks
+  const createNewsMutation = useCreateNews();
+  const updateNewsMutation = useUpdateNews();
   
   // Default values for the form
   const defaultValues: Partial<NewsFormValues> = {
@@ -71,6 +77,29 @@ const NewsForm = ({ onClose, onSubmit, isEditing, newsData }: NewsFormProps) => 
   });
   
   const handleSubmit = (data: NewsFormValues) => {
+    if (isEditing && newsData?._id) {
+      updateNewsMutation.mutate({
+        id: newsData._id,
+        newsData: {
+          title: data.title,
+          content: data.content,
+          excerpt: data.excerpt,
+          category: data.category,
+          isFeatured: data.featured,
+          publishedAt: data.publishDate || new Date().toISOString(),
+        }
+      });
+    } else {
+      createNewsMutation.mutate({
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt,
+        category: data.category,
+        isFeatured: data.featured,
+        publishedAt: data.publishDate || new Date().toISOString(),
+        author: 'Admin', // This should come from the logged-in user
+      });
+    }
     onSubmit(data);
   };
   

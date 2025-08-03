@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useLogin } from '@/hooks/useApi';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -20,30 +21,19 @@ const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const loginMutation = useLogin();
   
   const onSubmit = (data: LoginFormData) => {
-    console.log('Login data:', data);
-    
-    // Simulating successful login (would be replaced with actual API call)
-    if (data.email === 'admin@example.com' && data.password === 'password') {
-      toast({
-        title: "सफल लॉगिन",
-        description: "आपका स्वागत है!",
-      });
-      
-      // Redirect to admin dashboard
-      navigate('/admin');
-      
-      if (onSuccess) {
-        onSuccess();
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        // Redirect to admin dashboard
+        navigate('/admin');
+        
+        if (onSuccess) {
+          onSuccess();
+        }
       }
-    } else {
-      toast({
-        title: "लॉगिन विफल",
-        description: "कृपया अपने ईमेल और पासवर्ड की जांच करें।",
-        variant: "destructive",
-      });
-    }
+    });
   };
   
   return (

@@ -1,23 +1,25 @@
 
 import React, { useState } from 'react';
-import AdminSidebar from '@/components/admin/AdminSidebar';
-import AdminTopbar from '@/components/admin/AdminTopbar';
 import { Button } from '@/components/ui/button';
 import { Plus, Search, Filter, ChevronDown } from 'lucide-react';
 import NewsTable from '@/components/admin/NewsTable';
 import NewsForm from '@/components/admin/NewsForm';
 import { useToast } from '@/hooks/use-toast';
+import { useNews, usePendingNews, useDeleteNews, useApproveNews } from '@/hooks/useApi';
+import { NewsItem } from '@/lib/api';
 
 const AdminNewsManagement = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddingNews, setIsAddingNews] = useState(false);
   const [isEditingNews, setIsEditingNews] = useState(false);
-  const [selectedNews, setSelectedNews] = useState(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const { toast } = useToast();
   
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  // API hooks
+  const { data: newsData, isLoading: newsLoading } = useNews();
+  const { data: pendingNewsData, isLoading: pendingLoading } = usePendingNews();
+  const deleteNewsMutation = useDeleteNews();
+  const approveNewsMutation = useApproveNews();
+
   
   const handleAddNewsClick = () => {
     setIsAddingNews(true);
@@ -25,19 +27,18 @@ const AdminNewsManagement = () => {
     setSelectedNews(null);
   };
   
-  const handleEditNews = (news) => {
+  const handleEditNews = (news: NewsItem) => {
     setSelectedNews(news);
     setIsEditingNews(true);
     setIsAddingNews(false);
   };
   
-  const handleDeleteNews = (newsId) => {
-    // In a real app, this would call an API to delete the news
-    toast({
-      title: "समाचार हटा दिया गया",
-      description: "समाचार सफलतापूर्वक हटा दिया गया है",
-      variant: "default",
-    });
+  const handleDeleteNews = (newsId: string) => {
+    deleteNewsMutation.mutate(newsId);
+  };
+  
+  const handleApproveNews = (newsId: string) => {
+    approveNewsMutation.mutate(newsId);
   };
   
   const handleFormClose = () => {
@@ -46,38 +47,12 @@ const AdminNewsManagement = () => {
     setSelectedNews(null);
   };
   
-  const handleFormSubmit = (newsData) => {
-    // In a real app, this would call an API to save the news
-    toast({
-      title: isEditingNews ? "समाचार अपडेट किया गया" : "नया समाचार जोड़ा गया",
-      description: isEditingNews 
-        ? "समाचार सफलतापूर्वक अपडेट किया गया है" 
-        : "नया समाचार सफलतापूर्वक जोड़ा गया है",
-      variant: "default",
-    });
-    
+  const handleFormSubmit = (newsData: Partial<NewsItem>) => {
+    // This will be handled by the NewsForm component with proper API calls
     handleFormClose();
   };
   
-  return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Mobile sidebar overlay */}
-      <div 
-        className={`fixed inset-0 bg-gray-800 bg-opacity-50 z-40 md:hidden transition-opacity duration-300 ease-in-out ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
-        onClick={toggleSidebar}
-      ></div>
-      
-      {/* Sidebar */}
-      <div 
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-news-blue-dark transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <AdminSidebar />
-      </div>
-      
-      <div className="flex-1 flex flex-col md:ml-64">
-        <AdminTopbar toggleSidebar={toggleSidebar} />
+  return (  
         
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">
           {(isAddingNews || isEditingNews) ? (
@@ -125,14 +100,16 @@ const AdminNewsManagement = () => {
               </div>
               
               <NewsTable 
+                news={newsData?.news || []}
+                pendingNews={pendingNewsData?.news || []}
+                isLoading={newsLoading || pendingLoading}
                 onEdit={handleEditNews} 
-                onDelete={handleDeleteNews} 
+                onDelete={handleDeleteNews}
+                onApprove={handleApproveNews}
               />
             </>
           )}
         </main>
-      </div>
-    </div>
   );
 };
 

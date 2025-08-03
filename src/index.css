@@ -1,5 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 @tailwind base;
 @tailwind components;
@@ -72,6 +74,16 @@
   
   .news-card-image {
     @apply w-full h-48 object-cover;
+  }
+  
+  /* Ensure images load properly */
+  img {
+    @apply max-w-full h-auto;
+  }
+  
+  /* Fallback for broken images */
+  img[src*="placeholder"] {
+    @apply bg-gray-200;
   }
   
   .news-card-content {

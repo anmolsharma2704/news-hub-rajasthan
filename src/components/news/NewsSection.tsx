@@ -19,6 +19,11 @@ const NewsSection = ({
   viewAllLink,
   layout = 'grid'
 }: NewsSectionProps) => {
+  // Don't render if no news items
+  if (!newsItems || newsItems.length === 0) {
+    return null;
+  }
+
   return (
     <section className="news-section">
       <div className="flex items-center justify-between mb-4">
@@ -36,13 +41,13 @@ const NewsSection = ({
       {layout === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {newsItems.map((news) => (
-            <NewsCard key={news.id} news={news} />
+            <NewsCard key={news._id} news={news} />
           ))}
         </div>
       ) : (
         <div className="space-y-4">
           {newsItems.map((news) => (
-            <NewsCard key={news.id} news={news} variant="small" />
+            <NewsCard key={news._id} news={news} variant="small" />
           ))}
         </div>
       )}
